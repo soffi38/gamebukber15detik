@@ -150,17 +150,17 @@
 
     <div id="start-screen" class="overlay">
         <h1 style="font-size: 3rem; margin-bottom: 10px;">Misi Rahasia Loker</h1>
-        <p style="font-size: 1.2rem; max-width: 400px;">Hafalkan posisi benda di dalam loker dalam 15 detik, lalu temukan benda rahasianya!</p>
+        <p style="font-size: 1.2rem; max-width: 400px;">Hafalkan posisi benda di dalam loker dalam 10 detik, lalu temukan benda rahasianya!</p>
         <button class="btn" onclick="startGame()">Mulai Game</button>
     </div>
 
     <div class="header">
         <h1 id="round-title">Ronde 1</h1>
-        <p>Hafalkan posisi benda dalam 15 detik!</p>
+        <p>Hafalkan posisi benda dalam 10 detik!</p>
     </div>
 
     <div class="game-board" id="board">
-        <div id="countdown">15</div>
+        <div id="countdown">10</div>
     </div>
 
     <div id="win-screen" class="overlay" style="display: none;">
@@ -231,7 +231,218 @@
 
             isLock = true;
             countdownDisplay.style.display = 'block';
-            let count = 15;
+            let count = 10;
+            countdownDisplay.textContent = count;
+
+            let timer = setInterval(() => {
+                count--;
+                if(count > 0) {
+                    countdownDisplay.textContent = count;
+                } else {
+                    clearInterval(timer);
+                    countdownDisplay.style.display = 'none';
+                    document.querySelectorAll('.card').forEach(c => c.classList.remove('flipped'));
+                    isLock = false;
+                }
+            }, 1000);
+        }
+
+        function nextRound() {
+            currentRound++;
+            if(currentRound < roundTargets.length) {
+                initRound();
+            } else {
+                document.getElementById('round-title').textContent = "SELESAI!";
+                document.getElementById('win-message').textContent = "Kamu menyelesaikan semua misi!";
+                const btn = document.getElementById('next-btn');
+                btn.textContent = "Main Lagi";
+                btn.onclick = () => location.reload(); 
+            }
+        }
+    </script>
+</body>
+    </html>            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .card-back {
+            background-color: var(--locker-blue);
+            flex-direction: column;
+            color: rgba(255,255,255,0.8);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .card-back::after {
+            content: "||||";
+            color: rgba(0,0,0,0.3);
+            font-size: 1.2rem;
+            position: absolute;
+            top: 15px;
+            letter-spacing: 2px;
+        }
+
+        .card-front {
+            background-color: #ecf0f1;
+            transform: rotateY(180deg);
+        }
+
+        #countdown {
+            position: absolute;
+            font-size: 8rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 20px rgba(0,0,0,0.8);
+            z-index: 101;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        /* Overlay Awal & Menang */
+        .overlay {
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 150;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .btn {
+            background: var(--accent-yellow);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.4rem;
+            cursor: pointer;
+            margin-top: 20px;
+            color: #333;
+            transition: transform 0.2s;
+            box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4);
+        }
+        .btn:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen" class="overlay">
+        <h1 style="font-size: 3rem; margin-bottom: 10px;">Misi Rahasia Loker</h1>
+        <p style="font-size: 1.2rem; max-width: 400px;">Hafalkan posisi benda di dalam loker dalam 15 detik, lalu temukan benda rahasianya!</p>
+        <button class="btn" onclick="startGame()">Mulai Game</button>
+    </div>
+
+    <div class="header">
+        <h1 id="round-title">Ronde 1</h1>
+        <p>Hafalkan posisi benda dalam 10 detik!</p>
+    </div>
+
+    <div class="game-board" id="board">
+        <div id="countdown">10</div>
+    </div>
+
+    <div id="win-screen" class="overlay" style="display: none;">
+        <h1 style="font-size: 4rem; margin: 0;">🎉 TEPAT!</h1>
+        <p style="font-size: 1.5rem;" id="win-message"></p>
+        <button class="btn" id="next-btn" onclick="nextRound()">Ronde Berikutnya</button>
+    </div>
+
+    <script>
+        const emojis = ["🍗","🍜","🥤","🌙","🕌","🍰","🍉","🥟","🍦","🍩","🍎","🍔"];
+        const roundTargets = ["🌙", "🍦"]; 
+        let currentRound = 0;
+        let isLock = false;
+
+        function startGame() {
+            document.getElementById('start-screen').style.display = 'none';
+            currentRound = 0;
+            initRound();
+        }
+
+        function initRound() {
+            const board = document.getElementById('board');
+            const countdownDisplay = document.getElementById('countdown');
+            const roundTitle = document.getElementById('round-title');
+            
+            document.getElementById('win-screen').style.display = 'none';
+            board.querySelectorAll('.card').forEach(c => c.remove());
+            
+            roundTitle.textContent = `Ronde ${currentRound + 1}`;
+            
+            let target = roundTargets[currentRound];
+            let pool = emojis.filter(e => e !== target);
+            let shuffled = pool.sort(() => 0.5 - Math.random()).slice(0, 7);
+            shuffled.push(target);
+            shuffled.sort(() => 0.5 - Math.random());
+
+            shuffled.forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.className = 'card flipped'; 
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-back">${index + 1}</div>
+                        <div class="card-front">${emoji}</div>
+                    </div>
+                `;
+                
+                card.onclick = function() {
+                    if(isLock || this.classList.contains('flipped')) return;
+                    this.classList.add('flipped');
+                    
+                    if(emoji === target) {
+                        isLock = true;
+                        setTimeout(() => {
+                            let msg = currentRound === 0 ? "Target pertama ditemukan!" : "Target kedua ditemukan!";
+                            document.getElementById('win-message').textContent = msg;
+                            document.getElementById('win-screen').style.display = 'flex';
+                        }, 600);
+                    } else {
+                        isLock = true;
+                        setTimeout(() => {
+                            this.classList.remove('flipped');
+                            isLock = false;
+                        }, 800);
+                    }
+                };
+                board.appendChild(card);
+            });
+
+            isLock = true;
+            countdownDisplay.style.display = 'block';
+            let count = 10;
             countdownDisplay.textContent = count;
 
             let timer = setInterval(() => {
@@ -262,3 +473,4 @@
     </script>
 </body>
 </html>
+
